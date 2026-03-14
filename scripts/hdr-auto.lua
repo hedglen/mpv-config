@@ -83,6 +83,7 @@ local function manual_toggle()
 end
 
 mp.register_event("file-loaded", detect_and_switch)
+mp.register_event("video-reconfig", detect_and_switch)
 
 -- Always restore HDR to off when mpv closes
 mp.register_event("shutdown", function()
