@@ -57,10 +57,17 @@ end
 
 local function detect_and_switch()
     -- video-params reflects the actual stream metadata, regardless of our forced bt.709 overrides
-    local gamma    = mp.get_property("video-params/gamma") or ""
+    local gamma     = mp.get_property("video-params/gamma") or ""
     local primaries = mp.get_property("video-params/primaries") or ""
     local needs_hdr = HDR_TRANSFERS[gamma] ~= nil or primaries == "bt.2020"
     set_hdr(needs_hdr)
+end
+
+local function hdr_status()
+    local gamma     = mp.get_property("video-params/gamma") or "unknown"
+    local primaries = mp.get_property("video-params/primaries") or "unknown"
+    local state     = hdr_active and "ON" or "OFF"
+    mp.osd_message(string.format("HDR: %s | gamma=%s primaries=%s", state, gamma, primaries), 4)
 end
 
 local function manual_toggle()
@@ -76,4 +83,5 @@ mp.register_event("shutdown", function()
     end
 end)
 
-mp.add_key_binding(nil, "toggle-hdr", manual_toggle)
+mp.add_forced_key_binding("H", "toggle-hdr", manual_toggle)
+mp.add_forced_key_binding("h", "hdr-status", hdr_status)
