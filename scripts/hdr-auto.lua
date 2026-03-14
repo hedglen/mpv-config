@@ -20,13 +20,21 @@ end
 
 local function apply_mpv_settings(hdr)
     if hdr then
-        -- HDR passthrough: let mpv read the video's own color metadata
+        -- HDR passthrough: disable tone mapping overrides and equalizer
         mp.set_property("target-colorspace-hint", "yes")
         mp.set_property("hdr-compute-peak", "yes")
+        mp.set_property("brightness", "0")
+        mp.set_property("contrast",   "0")
+        mp.set_property("saturation", "0")
+        mp.set_property("gamma",      "0")
     else
-        -- SDR mode: restore config defaults
+        -- SDR mode: restore config defaults and equalizer
         mp.set_property("target-colorspace-hint", "no")
         mp.set_property("hdr-compute-peak", "no")
+        mp.set_property("brightness", "3")
+        mp.set_property("contrast",   "15")
+        mp.set_property("saturation", "25")
+        mp.set_property("gamma",      "5")
     end
 end
 
