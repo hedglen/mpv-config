@@ -19,6 +19,7 @@ local function hms(s)
 end
 
 -- Look for an executable in the mpv install folder, then PATH
+-- Returns: path (string) or nil, debug_info (string)
 local function find_exe(name)
     local cfg = mp.get_property("config-dir") or ""
     cfg = cfg:gsub("[\\/]?$", "")                     -- strip trailing slash
@@ -30,8 +31,8 @@ local function find_exe(name)
         parent .. "\\" .. name,
     }
     for _, p in ipairs(tries) do
-        local f = io.open(p, "r")
-        if f then f:close(); return p end
+        local info = utils.file_info(p)
+        if info then return p end
     end
 
     -- Fall back to PATH via `where`
@@ -41,9 +42,7 @@ local function find_exe(name)
         if line and line ~= "" then return line:match("^%s*(.-)%s*$") end
     end
 
-    -- Debug: show what was tried
-    mp.osd_message(name .. " not found\ncfg=" .. cfg .. "\nparent=" .. parent, 8)
-    return nil
+    return nil, "cfg=" .. cfg .. "\nparent=" .. parent
 end
 
 -- ── Add chapter ──────────────────────────────────────────────────────────────
@@ -185,11 +184,11 @@ local function save_chapters()
         end
     end
 
-    local ffmpeg = find_exe("ffmpeg")
+    local ffmpeg, dbg = find_exe("ffmpeg")
     if ffmpeg then
         save_ffmpeg(ffmpeg, path, chapters, dir, basename, ext)
     else
-        mp.osd_message("ffmpeg not found — cannot save chapters", 5)
+        mp.osd_message("ffmpeg not found\n" .. (dbg or ""), 10)
     end
 end
 
