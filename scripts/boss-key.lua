@@ -6,5 +6,5 @@ local function boss_key()
     mp.set_property("window-minimized", "yes")
 end
 
-mp.add_key_binding(nil, "boss-key", boss_key)
+mp.add_forced_key_binding("F22", "boss-key", boss_key)
 mp.register_script_message("boss-key", boss_key)

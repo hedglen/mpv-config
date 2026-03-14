@@ -22,9 +22,9 @@ local function reset_loop()
     mp.osd_message("A-B: Loop cleared")
 end
 
-mp.add_key_binding(nil, "mark-a", mark_a)
-mp.add_key_binding(nil, "mark-b", mark_b)
-mp.add_key_binding(nil, "reset", reset_loop)
+mp.add_forced_key_binding("F21", "ab-mark-a", mark_a)
+mp.add_forced_key_binding("F24", "ab-mark-b", mark_b)
+mp.add_forced_key_binding("F20", "ab-reset",  reset_loop)
 
 mp.register_script_message("mark-a", mark_a)
 mp.register_script_message("mark-b", mark_b)
