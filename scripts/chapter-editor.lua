@@ -20,7 +20,6 @@ end
 
 -- Look for an executable in the mpv install folder, then PATH
 local function find_exe(name)
-    -- config-dir = C:\mpv\portable_config  →  parent = C:\mpv
     local cfg = mp.get_property("config-dir") or ""
     cfg = cfg:gsub("[\\/]?$", "")                     -- strip trailing slash
     local parent = cfg:gsub("[\\/][^\\/]+$", "")       -- strip last component
@@ -41,6 +40,9 @@ local function find_exe(name)
         local line = h:read("*l"); h:close()
         if line and line ~= "" then return line:match("^%s*(.-)%s*$") end
     end
+
+    -- Debug: show what was tried
+    mp.osd_message(name .. " not found\ncfg=" .. cfg .. "\nparent=" .. parent, 8)
     return nil
 end
 
