@@ -19,16 +19,21 @@ local function hms(s)
 end
 
 -- Look for an executable in the mpv install folder, then PATH
--- Returns: path (string) or nil, debug_info (string)
+-- Returns: path or nil, debug_info string
 local function find_exe(name)
-    local cfg = mp.get_property("config-dir") or ""
-    cfg = cfg:gsub("[\\/]?$", "")                     -- strip trailing slash
-    local parent = cfg:gsub("[\\/][^\\/]+$", "")       -- strip last component
+    -- Use this script's own path to locate the mpv install dir.
+    -- script is at:  <mpv>\portable_config\scripts\chapter-editor.lua
+    -- mpv_dir is:    <mpv>   (3 levels up)
+    local src = debug.getinfo(1, "S").source:sub(2)  -- strip leading @
+    local mpv_dir = src
+        :gsub("[\\/]?$", "")       -- strip trailing slash
+        :gsub("[\\/][^\\/]+$", "") -- strip filename      → .../scripts
+        :gsub("[\\/][^\\/]+$", "") -- strip /scripts      → .../portable_config
+        :gsub("[\\/][^\\/]+$", "") -- strip /portable_config → mpv install dir
 
     local tries = {
-        parent .. "\\" .. name .. ".exe",
-        parent .. "/"  .. name .. ".exe",
-        parent .. "\\" .. name,
+        mpv_dir .. "\\" .. name .. ".exe",
+        mpv_dir .. "/"  .. name .. ".exe",
     }
     for _, p in ipairs(tries) do
         local info = utils.file_info(p)
@@ -42,7 +47,7 @@ local function find_exe(name)
         if line and line ~= "" then return line:match("^%s*(.-)%s*$") end
     end
 
-    return nil, "cfg=" .. cfg .. "\nparent=" .. parent
+    return nil, "mpv_dir=" .. mpv_dir
 end
 
 -- ── Add chapter ──────────────────────────────────────────────────────────────
