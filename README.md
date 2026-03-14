@@ -9,11 +9,12 @@ Personal mpv configuration for Windows — tuned for an **LG UltraGear 34GP83A-B
   - ≤720p → FSRCNNX x2 56-16-4-1 (CNN upscaling)
   - 1080p → SSimDownscaler + FSRCNNX (overshoots then corrects)
   - 1440p+ → no shader (already at or above native)
-- **HDR auto-switching** — detects PQ/HLG/BT.2020 content and toggles Windows HDR on/off automatically
+- **HDR auto-switching** — detects PQ/HLG/BT.2020 content and toggles Windows HDR on/off automatically; works across single-instance file switches
 - **uosc** modern UI with right-click context menu
 - **Anime4K** shaders available for animated content (Ctrl+2)
 - Vivid, punchy picture without oversaturation
 - Full **Corsair Scimitar** 12-button side panel layout
+- **Single-instance mode** — opening a new file loads it into the existing window (`mpv-single.bat`)
 
 ## Quick Install
 
@@ -41,7 +42,8 @@ This will:
    git clone https://github.com/hedglen/mpv-config.git C:\mpv\portable_config
    ```
 4. Download [yt-dlp.exe](https://github.com/yt-dlp/yt-dlp/releases/latest) into `C:\mpv`
-5. Done — run `mpv.exe`
+5. Download [HdrSwitcher.zip](https://github.com/Vaiz/HdrSwitcher/releases/latest), extract, and copy `HdrSwitcher.exe` into `C:\mpv\portable_config` as `hdrswitch.exe`
+6. Done — run `mpv.exe` (or `mpv-single.bat` for single-instance mode)
 
 ## Key Bindings
 
@@ -85,6 +87,7 @@ Map buttons 1–12 to **F13–F24** in iCUE (Keyboard action, no modifier).
 | Key | Action |
 |-----|--------|
 | H | Manual HDR toggle |
+| h | Show HDR status (gamma, primaries, on/off) |
 
 ### Color / Picture
 | Key | Action |
