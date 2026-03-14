@@ -60,6 +60,8 @@ local function open_favorites()
         return
     end
     f:close()
+    -- Tell autoload this is a manual playlist so it doesn't override it
+    mp.commandv("script-message-to", "autoload", "autoload-reset")
     mp.commandv("loadlist", fav_file, "replace")
     mp.osd_message("Loaded favorites")
 end

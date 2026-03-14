@@ -219,3 +219,9 @@ function find_and_add_entries()
 end
 
 mp.register_event("start-file", find_and_add_entries)
+
+-- Allow other scripts (e.g. favorites) to signal that the current playlist
+-- was built manually, so autoload should not override it.
+mp.register_script_message("autoload-reset", function()
+    autoloaded = nil
+end)
