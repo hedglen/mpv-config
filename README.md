@@ -20,7 +20,7 @@ Personal mpv configuration for Windows — tuned for an **LG UltraGear 34GP83A-B
 Open PowerShell and run:
 
 ```powershell
-irm https://raw.githubusercontent.com/hedglen/mpv-config/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/hedglen/mpv-config/master/install.ps1 | iex
 ```
 
 This will:
