@@ -7,3 +7,4 @@ local function boss_key()
 end
 
 mp.add_key_binding(nil, "boss-key", boss_key)
+mp.register_script_message("boss-key", boss_key)

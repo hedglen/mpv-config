@@ -48,3 +48,6 @@ end
 
 mp.add_key_binding(nil, "favorites-open", open_favorites)
 mp.add_key_binding(nil, "favorites-add", add_favorite)
+
+mp.register_script_message("favorites-open", open_favorites)
+mp.register_script_message("favorites-add", add_favorite)

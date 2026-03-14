@@ -25,3 +25,7 @@ end
 mp.add_key_binding(nil, "mark-a", mark_a)
 mp.add_key_binding(nil, "mark-b", mark_b)
 mp.add_key_binding(nil, "reset", reset_loop)
+
+mp.register_script_message("mark-a", mark_a)
+mp.register_script_message("mark-b", mark_b)
+mp.register_script_message("reset", reset_loop)
