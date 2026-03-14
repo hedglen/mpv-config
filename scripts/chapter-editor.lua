@@ -47,7 +47,7 @@ local function find_exe(name)
         if line and line ~= "" then return line:match("^%s*(.-)%s*$") end
     end
 
-    return nil, "mpv_dir=" .. mpv_dir
+    return nil
 end
 
 -- ── Add chapter ──────────────────────────────────────────────────────────────
@@ -189,11 +189,11 @@ local function save_chapters()
         end
     end
 
-    local ffmpeg, dbg = find_exe("ffmpeg")
+    local ffmpeg = find_exe("ffmpeg")
     if ffmpeg then
         save_ffmpeg(ffmpeg, path, chapters, dir, basename, ext)
     else
-        mp.osd_message("ffmpeg not found\n" .. (dbg or ""), 10)
+        mp.osd_message("ffmpeg not found — place ffmpeg.exe in C:\\mpv\\", 5)
     end
 end
 
