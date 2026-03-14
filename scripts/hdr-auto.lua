@@ -25,14 +25,12 @@ local function apply_mpv_settings(hdr)
         mp.set_property("hdr-compute-peak", "yes")
         mp.set_property("color-primaries", "auto")
         mp.set_property("transfer-characteristics", "auto")
-        mp.set_property("colormatrix", "auto")
     else
         -- SDR mode: restore config defaults
         mp.set_property("target-colorspace-hint", "no")
         mp.set_property("hdr-compute-peak", "no")
         mp.set_property("color-primaries", "bt.709")
         mp.set_property("transfer-characteristics", "bt.709")
-        mp.set_property("colormatrix", "bt.709")
     end
 end
 
