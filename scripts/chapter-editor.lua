@@ -18,15 +18,28 @@ local function hms(s)
         math.floor(s / 3600), math.floor(s % 3600 / 60), s % 60)
 end
 
--- Look for an executable in the mpv install folder then PATH
+-- Look for an executable in the mpv install folder, then PATH
 local function find_exe(name)
-    local cfg = mp.command_native({"expand-path", "~~/"})
-    -- portable_config sits inside the mpv folder — go up one level
-    local parent = cfg:gsub("[\\/]?$", ""):gsub("[\\/][^\\/]+$", "") .. "/"
-    local tries = {parent .. name .. ".exe", parent .. name, name .. ".exe", name}
+    -- config-dir = C:\mpv\portable_config  →  parent = C:\mpv
+    local cfg = mp.get_property("config-dir") or ""
+    cfg = cfg:gsub("[\\/]?$", "")                     -- strip trailing slash
+    local parent = cfg:gsub("[\\/][^\\/]+$", "")       -- strip last component
+
+    local tries = {
+        parent .. "\\" .. name .. ".exe",
+        parent .. "/"  .. name .. ".exe",
+        parent .. "\\" .. name,
+    }
     for _, p in ipairs(tries) do
         local f = io.open(p, "r")
         if f then f:close(); return p end
+    end
+
+    -- Fall back to PATH via `where`
+    local h = io.popen("where " .. name .. ".exe 2>nul")
+    if h then
+        local line = h:read("*l"); h:close()
+        if line and line ~= "" then return line:match("^%s*(.-)%s*$") end
     end
     return nil
 end
