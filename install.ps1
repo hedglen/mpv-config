@@ -69,7 +69,27 @@ if (Test-Path "$configDir\.git") {
 OK "Config installed to $configDir"
 
 # -----------------------------------------------------------------------------
-# 5. Download HdrSwitcher into portable_config
+# 5. Download ffmpeg (needed for chapter saving and other tools)
+# -----------------------------------------------------------------------------
+Info "Downloading ffmpeg..."
+try {
+    $ffmpegUrl = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip"
+    $ffmpegZip = "$env:TEMP\ffmpeg.zip"
+    Invoke-WebRequest -Uri $ffmpegUrl -OutFile $ffmpegZip
+    Expand-Archive -Path $ffmpegZip -DestinationPath "$env:TEMP\ffmpeg_tmp" -Force
+    $ffmpegExe = Get-ChildItem "$env:TEMP\ffmpeg_tmp" -Recurse -Filter "ffmpeg.exe" | Select-Object -First 1
+    if ($ffmpegExe) {
+        Copy-Item $ffmpegExe.FullName "$InstallDir\ffmpeg.exe" -Force
+        OK "ffmpeg installed"
+    }
+    Remove-Item $ffmpegZip -Force -ErrorAction SilentlyContinue
+    Remove-Item "$env:TEMP\ffmpeg_tmp" -Recurse -Force -ErrorAction SilentlyContinue
+} catch {
+    Write-Host "[~] ffmpeg download failed — get it from https://ffmpeg.org/download.html and place ffmpeg.exe in $InstallDir" -ForegroundColor Yellow
+}
+
+# -----------------------------------------------------------------------------
+# 6. Download HdrSwitcher into portable_config
 # -----------------------------------------------------------------------------
 Info "Downloading HdrSwitcher..."
 try {
@@ -89,7 +109,7 @@ try {
 }
 
 # -----------------------------------------------------------------------------
-# 6. Create desktop shortcut
+# 7. Create desktop shortcut
 # -----------------------------------------------------------------------------
 Info "Creating desktop shortcut..."
 $mpvExe = Get-ChildItem "$InstallDir" -Filter "mpv.exe" -Recurse | Select-Object -First 1
@@ -103,7 +123,7 @@ if ($mpvExe) {
 }
 
 # -----------------------------------------------------------------------------
-# 7. Add mpv to user PATH
+# 8. Add mpv to user PATH
 # -----------------------------------------------------------------------------
 if ($mpvExe) {
     $mpvDir     = $mpvExe.DirectoryName
