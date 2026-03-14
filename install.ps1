@@ -15,6 +15,8 @@ function Info  { param($m) Write-Host "[*] $m" -ForegroundColor Cyan }
 function OK    { param($m) Write-Host "[+] $m" -ForegroundColor Green }
 function Fatal { param($m) Write-Host "[!] $m" -ForegroundColor Red; exit 1 }
 
+$configDir = "$InstallDir\portable_config"
+
 # -----------------------------------------------------------------------------
 # 1. Create install directory
 # -----------------------------------------------------------------------------
@@ -33,7 +35,7 @@ $mpvZip = "$env:TEMP\mpv-latest.7z"
 Info "Downloading $($mpvAsset.name)..."
 Invoke-WebRequest -Uri $mpvAsset.browser_download_url -OutFile $mpvZip
 
-# Extract with 7-Zip (fallback: prompt user)
+# Extract with 7-Zip
 $sevenZip = @("C:\Program Files\7-Zip\7z.exe","C:\Program Files (x86)\7-Zip\7z.exe") | Where-Object { Test-Path $_ } | Select-Object -First 1
 if ($sevenZip) {
     Info "Extracting mpv..."
@@ -47,31 +49,12 @@ OK "mpv extracted to $InstallDir"
 # 3. Download yt-dlp
 # -----------------------------------------------------------------------------
 Info "Downloading yt-dlp..."
-$ytdlpUrl = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe"
-Invoke-WebRequest -Uri $ytdlpUrl -OutFile "$InstallDir\yt-dlp.exe"
+Invoke-WebRequest -Uri "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe" -OutFile "$InstallDir\yt-dlp.exe"
 OK "yt-dlp downloaded"
 
 # -----------------------------------------------------------------------------
-# 4. Download HdrSwitcher
+# 4. Clone config repo into portable_config (must come before HdrSwitcher copy)
 # -----------------------------------------------------------------------------
-Info "Downloading HdrSwitcher..."
-$hdrApi   = Invoke-RestMethod "https://api.github.com/repos/Vaiz/HdrSwitcher/releases/latest"
-$hdrAsset = $hdrApi.assets | Where-Object { $_.name -eq "HdrSwitcher.zip" } | Select-Object -First 1
-if ($hdrAsset) {
-    $hdrZip = "$env:TEMP\HdrSwitcher.zip"
-    Invoke-WebRequest -Uri $hdrAsset.browser_download_url -OutFile $hdrZip
-    Expand-Archive -Path $hdrZip -DestinationPath $env:TEMP\HdrSwitcher -Force
-    $configDir = "$InstallDir\portable_config"
-    Copy-Item "$env:TEMP\HdrSwitcher\HdrSwitcher.exe" "$configDir\hdrswitch.exe" -Force
-    OK "HdrSwitcher installed as hdrswitch.exe"
-} else {
-    Write-Host "[~] Could not download HdrSwitcher automatically — get it from https://github.com/Vaiz/HdrSwitcher/releases" -ForegroundColor Yellow
-}
-
-# -----------------------------------------------------------------------------
-# 5. Clone config repo into portable_config
-# -----------------------------------------------------------------------------
-$configDir = "$InstallDir\portable_config"
 if (Test-Path "$configDir\.git") {
     Info "Config already cloned — pulling latest..."
     git -C $configDir pull
@@ -86,6 +69,26 @@ if (Test-Path "$configDir\.git") {
 OK "Config installed to $configDir"
 
 # -----------------------------------------------------------------------------
+# 5. Download HdrSwitcher into portable_config
+# -----------------------------------------------------------------------------
+Info "Downloading HdrSwitcher..."
+try {
+    $hdrApi   = Invoke-RestMethod "https://api.github.com/repos/Vaiz/HdrSwitcher/releases/latest"
+    $hdrAsset = $hdrApi.assets | Where-Object { $_.name -eq "HdrSwitcher.zip" } | Select-Object -First 1
+    if ($hdrAsset) {
+        $hdrZip = "$env:TEMP\HdrSwitcher.zip"
+        Invoke-WebRequest -Uri $hdrAsset.browser_download_url -OutFile $hdrZip
+        Expand-Archive -Path $hdrZip -DestinationPath "$env:TEMP\HdrSwitcher" -Force
+        Copy-Item "$env:TEMP\HdrSwitcher\HdrSwitcher.exe" "$configDir\hdrswitch.exe" -Force
+        OK "HdrSwitcher installed as hdrswitch.exe"
+    } else {
+        Write-Host "[~] HdrSwitcher not found — get it from https://github.com/Vaiz/HdrSwitcher/releases and place it as hdrswitch.exe in $configDir" -ForegroundColor Yellow
+    }
+} catch {
+    Write-Host "[~] HdrSwitcher download failed — get it from https://github.com/Vaiz/HdrSwitcher/releases and place it as hdrswitch.exe in $configDir" -ForegroundColor Yellow
+}
+
+# -----------------------------------------------------------------------------
 # 6. Create desktop shortcut
 # -----------------------------------------------------------------------------
 Info "Creating desktop shortcut..."
@@ -93,23 +96,25 @@ $mpvExe = Get-ChildItem "$InstallDir" -Filter "mpv.exe" -Recurse | Select-Object
 if ($mpvExe) {
     $shell    = New-Object -ComObject WScript.Shell
     $shortcut = $shell.CreateShortcut("$env:USERPROFILE\Desktop\mpv.lnk")
-    $shortcut.TargetPath      = $mpvExe.FullName
+    $shortcut.TargetPath       = $mpvExe.FullName
     $shortcut.WorkingDirectory = $mpvExe.DirectoryName
     $shortcut.Save()
     OK "Desktop shortcut created"
 }
 
 # -----------------------------------------------------------------------------
-# 7. Add mpv to user PATH (optional)
+# 7. Add mpv to user PATH
 # -----------------------------------------------------------------------------
-$mpvDir = $mpvExe.DirectoryName
-$currentPath = [Environment]::GetEnvironmentVariable("PATH", "User")
-if ($currentPath -notlike "*$mpvDir*") {
-    [Environment]::SetEnvironmentVariable("PATH", "$currentPath;$mpvDir", "User")
-    OK "Added mpv to user PATH (restart terminal to take effect)"
+if ($mpvExe) {
+    $mpvDir     = $mpvExe.DirectoryName
+    $currentPath = [Environment]::GetEnvironmentVariable("PATH", "User")
+    if ($currentPath -notlike "*$mpvDir*") {
+        [Environment]::SetEnvironmentVariable("PATH", "$currentPath;$mpvDir", "User")
+        OK "Added mpv to user PATH (restart terminal to take effect)"
+    }
 }
 
 Write-Host ""
 OK "Done! mpv is installed at $InstallDir"
 Write-Host "    Config: $configDir" -ForegroundColor Gray
-Write-Host "    Run:    $($mpvExe.FullName)" -ForegroundColor Gray
+if ($mpvExe) { Write-Host "    Run:    $($mpvExe.FullName)" -ForegroundColor Gray }
