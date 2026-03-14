@@ -23,14 +23,10 @@ local function apply_mpv_settings(hdr)
         -- HDR passthrough: let mpv read the video's own color metadata
         mp.set_property("target-colorspace-hint", "yes")
         mp.set_property("hdr-compute-peak", "yes")
-        mp.set_property("color-primaries", "auto")
-        mp.set_property("transfer-characteristics", "auto")
     else
         -- SDR mode: restore config defaults
         mp.set_property("target-colorspace-hint", "no")
         mp.set_property("hdr-compute-peak", "no")
-        mp.set_property("color-primaries", "bt.709")
-        mp.set_property("transfer-characteristics", "bt.709")
     end
 end
 
