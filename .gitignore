@@ -19,3 +19,4 @@ favorites.txt
 # uosc platform binaries we don't need on Windows
 scripts/uosc/bin/ziggy-darwin
 scripts/uosc/bin/ziggy-linux
+mpv/
