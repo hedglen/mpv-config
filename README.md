@@ -25,13 +25,13 @@ The installer will:
 
 ## 🔧 Manual Install
 
-1. Download mpv from [shinchiro's builds](https://github.com/shinchiro/mpv-winbuild-cmake/releases) and extract to `%USERPROFILE%\tools\mpv`
+1. Download mpv from [shinchiro's builds](https://github.com/shinchiro/mpv-winbuild-cmake/releases) and extract to `C:\Users\rjh\workstation\tools\mpv`
 2. Clone this repo as `portable_config` inside the mpv folder:
    ```
-   git clone https://github.com/hedglen/mpv-config.git "%USERPROFILE%\tools\mpv\portable_config"
+   git clone https://github.com/hedglen/mpv-config.git "C:\Users\rjh\workstation\tools\mpv\portable_config"
    ```
-3. Download [yt-dlp.exe](https://github.com/yt-dlp/yt-dlp/releases/latest) into `%USERPROFILE%\tools\mpv`
-4. Download [HdrSwitcher.zip](https://github.com/Vaiz/HdrSwitcher/releases/latest), extract, and copy `HdrSwitcher.exe` into `%USERPROFILE%\tools\mpv\portable_config` as `hdrswitch.exe`
+3. Download [yt-dlp.exe](https://github.com/yt-dlp/yt-dlp/releases/latest) into `C:\Users\rjh\workstation\tools\mpv`
+4. Download [HdrSwitcher.zip](https://github.com/Vaiz/HdrSwitcher/releases/latest), extract, and copy `HdrSwitcher.exe` into `C:\Users\rjh\workstation\tools\mpv\portable_config` as `hdrswitch.exe`
 5. The single-instance launchers (`mpv-single.bat`, `mpv-single.ps1`) live alongside `mpv.exe` in `tools\mpv\` — use `mpv-single.bat` for file associations
 
 ---
@@ -284,8 +284,14 @@ Map buttons 1–12 to **F13–F24** in iCUE (Keyboard action, no modifier).
 
 To make clicking a video file always open in the existing mpv window:
 
-1. Set **`%USERPROFILE%\tools\mpv\mpv-single.bat`** as the default program for your video file types
+1. Set **`C:\Users\rjh\workstation\tools\mpv\mpv-single.bat`** as the default program for your video file types
 2. It connects to mpv's named pipe (`\\.\pipe\mpvsocket`) and sends a `loadfile` command
 3. Falls back to launching a new mpv instance if none is running
 
 > The launcher scripts (`mpv-single.bat` / `mpv-single.ps1`) live in `tools\mpv\` alongside `mpv.exe` — not in this config repo.
+
+## Compatibility
+
+If you still have older references to `%USERPROFILE%\tools`, keep a **junction**
+at `%USERPROFILE%\tools` pointing to `C:\Users\rjh\workstation\tools` so legacy
+paths resolve, but treat `workstation\tools` as canonical.
