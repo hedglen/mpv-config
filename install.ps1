@@ -124,7 +124,56 @@ try {
 }
 
 # -----------------------------------------------------------------------------
-# 7. Create desktop shortcut
+# 7. Create single-instance launcher (mpv-single.bat + mpv-single.ps1)
+# -----------------------------------------------------------------------------
+Info "Creating single-instance launcher..."
+$batPath = "$InstallDir\mpv-single.bat"
+$ps1Path = "$InstallDir\mpv-single.ps1"
+
+SkipOrRun "Write mpv-single.bat" {
+    @'
+@echo off
+powershell -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -File "%~dp0mpv-single.ps1" "%~1"
+'@ | Set-Content $batPath -Encoding ASCII
+}
+
+SkipOrRun "Write mpv-single.ps1" {
+    @'
+param([string]$File)
+
+$mpv  = Join-Path $PSScriptRoot "mpv.exe"
+$pipe = "mpvsocket"
+
+try {
+    $client = New-Object System.IO.Pipes.NamedPipeClientStream(".", $pipe, [System.IO.Pipes.PipeDirection]::Out)
+    $client.Connect(300)
+    $writer = New-Object System.IO.StreamWriter($client)
+    $writer.AutoFlush = $true
+    $cmd = '{"command":["loadfile","' + ($File -replace '\\', '\\\\') + '","replace"]}'
+    $writer.WriteLine($cmd)
+    $client.Dispose()
+} catch {
+    Start-Process $mpv -ArgumentList "`"$File`""
+}
+'@ | Set-Content $ps1Path -Encoding UTF8
+}
+
+SkipOrRun "Register mpv-single.bat as Open With handler" {
+    $appRegPath = 'HKCU:\Software\Classes\Applications\mpv-single.bat'
+    New-Item -Path "$appRegPath\shell\open\command" -Force | Out-Null
+    Set-ItemProperty -Path "$appRegPath\shell\open\command" -Name '(Default)' `
+        -Value "cmd.exe /c `"`"$batPath`" `"%1`"`"" -Force
+    Set-ItemProperty -Path $appRegPath -Name 'FriendlyAppName' -Value 'mpv (single instance)' -Force
+
+    $exts = @('.mkv','.mp4','.avi','.mov','.wmv','.flv','.webm','.m4v','.ts','.m2ts','.mpg','.mpeg')
+    foreach ($ext in $exts) {
+        New-Item -Path "HKCU:\Software\Classes\$ext\OpenWithList\mpv-single.bat" -Force | Out-Null
+    }
+}
+OK "Single-instance launcher created and registered"
+
+# -----------------------------------------------------------------------------
+# 8. Create desktop shortcut
 # -----------------------------------------------------------------------------
 Info "Creating desktop shortcut..."
 $mpvExe = Get-ChildItem "$InstallDir" -Filter "mpv.exe" -Recurse | Select-Object -First 1
