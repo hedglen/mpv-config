@@ -7,16 +7,15 @@ local mp = require 'mp'
 local geo_file = mp.command_native({"expand-path", "~~home/window-geometry.txt"})
 
 local function save_geo()
-    local w = mp.get_property_number("osd-width")
-    local h = mp.get_property_number("osd-height")
+    local w = mp.get_property_number("window-width")
+    local h = mp.get_property_number("window-height")
     if not w or not h or w <= 0 or h <= 0 then return end
 
-    local x = mp.get_property_number("window-pos-x")
-    local y = mp.get_property_number("window-pos-y")
+    local pos = mp.get_property_native("window-pos")
 
     local geo
-    if x and y then
-        geo = string.format("%dx%d+%d+%d", math.floor(w), math.floor(h), math.floor(x), math.floor(y))
+    if pos and pos.x and pos.y then
+        geo = string.format("%dx%d+%d+%d", math.floor(w), math.floor(h), math.floor(pos.x), math.floor(pos.y))
     else
         geo = string.format("%dx%d", math.floor(w), math.floor(h))
     end
