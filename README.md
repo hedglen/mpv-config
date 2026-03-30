@@ -295,3 +295,5 @@ To make clicking a video file always open in the existing mpv window:
 If you still have older references to `%USERPROFILE%\tools`, keep a **junction**
 at `%USERPROFILE%\tools` pointing to `C:\Users\rjh\workstation\tools` so legacy
 paths resolve, but treat `workstation\tools` as canonical.
+
+# maintained by hedglen
