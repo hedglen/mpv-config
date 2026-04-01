@@ -321,4 +321,8 @@ If you still have older references to `%USERPROFILE%\tools`, keep a **junction**
 at `%USERPROFILE%\tools` pointing to `C:\Users\rjh\workstation\tools` so legacy
 paths resolve, but treat `workstation\tools` as canonical.
 
+## Repository hygiene
+
+Root-level `cache/` (if mpv or scripts create it) is listed in `.gitignore` so it is not committed. Other auto-generated paths should be ignored the same way.
+
 # maintained by hedglen

@@ -4,6 +4,9 @@
 # Compiled shader cache (regenerated automatically)
 shaders/cache/
 
+# Root-level runtime cache (if created by scripts / mpv)
+cache/
+
 # Watch later / resume positions (personal state)
 watch_later/
 
