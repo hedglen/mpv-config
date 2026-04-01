@@ -25,6 +25,12 @@ end
 mp.add_forced_key_binding("F21", "ab-mark-a", mark_a)
 mp.add_forced_key_binding("F24", "ab-mark-b", mark_b)
 mp.add_forced_key_binding("F20", "ab-reset",  reset_loop)
+-- Scimitar 8 / 9 / 12 (Num Lock on or off): same keys as input.conf used to map; forced here so script-binding is not required.
+mp.add_forced_key_binding("KP2", "ab-scimitar-reset-kp2", reset_loop)
+mp.add_forced_key_binding("KP3", "ab-scimitar-a-kp3", mark_a)
+mp.add_forced_key_binding("KP_SUBTRACT", "ab-scimitar-b-sub", mark_b)
+mp.add_forced_key_binding("KP_DOWN", "ab-scimitar-reset-down", reset_loop)
+mp.add_forced_key_binding("KP_PGDWN", "ab-scimitar-a-pgdn", mark_a)
 
 mp.register_script_message("mark-a", mark_a)
 mp.register_script_message("mark-b", mark_b)
