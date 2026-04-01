@@ -31,9 +31,9 @@ local function apply_mpv_settings(hdr)
         -- SDR mode: restore config defaults and equalizer
         mp.set_property("target-colorspace-hint", "no")
         mp.set_property("hdr-compute-peak", "no")
-        mp.set_property("brightness", "3")
+        mp.set_property("brightness", "7")
         mp.set_property("contrast",   "15")
-        mp.set_property("saturation", "25")
+        mp.set_property("saturation", "5")
         mp.set_property("gamma",      "5")
     end
 end
